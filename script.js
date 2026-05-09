@@ -20,7 +20,7 @@ const MODES = {
     ],
   },
   academia: {
-    label: 'Academia',
+    label: 'Físico',
     categories: [
       { key:'forca',       label:'Força' },
       { key:'resistencia', label:'Resistência' },
@@ -28,7 +28,6 @@ const MODES = {
       { key:'flexibilidade',label:'Flexibilidade' },
       { key:'equilibrio',  label:'Equilíbrio' },
       { key:'cardio',      label:'Cardio' },
-      { key:'descanso',    label:'Descanso' },
       { key:'nutricao',    label:'Nutrição' },
     ],
   },
@@ -44,6 +43,28 @@ const MODES = {
       { key:'social',     label:'🗣️ Social' },
       { key:'disciplina', label:'🎯 Disciplina' },
       { key:'financas',   label:'💰 Finanças' },
+    ],
+  },
+  academia: {
+    label: 'Físico',
+    categories: [
+      { key:'forca',        label:'Força' },
+      { key:'resistencia',  label:'Resistência' },
+      { key:'velocidade',   label:'Velocidade' },
+      { key:'flexibilidade',label:'Flexibilidade' },
+      { key:'equilibrio',   label:'Equilíbrio' },
+      { key:'cardio',       label:'Cardio' },
+    ],
+  },
+  social: {
+    label: 'Social',
+    categories: [
+      { key:'comunicacao',     label:'Comunicação' },
+      { key:'conexoes',        label:'Conexões' },
+      { key:'confianca',       label:'Confiança' },
+      { key:'colaboracao',     label:'Colaboração' },
+      { key:'empatia',         label:'Empatia' },
+      { key:'relacionamentos', label:'Relacionamentos' },
     ],
   },
 };
@@ -69,6 +90,7 @@ const SK = {
   customFill:   'ms_cp_fill',
   customCats:   'ms_custom_cats',
   sbExpanded:   'ms_sb_expanded',
+  backup:       'ms_app_backup_v1',
 };
 
 /* ══ STATE ══════════════════════════════════════════════════ */
@@ -78,6 +100,8 @@ let customLine     = localStorage.getItem(SK.customLine) || '#00ffcc';
 let customFill     = localStorage.getItem(SK.customFill) || '#00ffcc';
 let chart          = null;
 let scores         = {};
+
+restoreBackupState();
 
 /* ══ BOOT ═══════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -93,7 +117,81 @@ document.addEventListener('DOMContentLoaded', () => {
   updateStats();
   updateTopbar();
   setDate();
+  persistAppBackup();
 });
+
+function persistAppBackup() {
+  const allScores = {};
+
+  Object.keys(MODES).forEach(modeKey => {
+    const categories = MODES[modeKey]?.categories || [];
+    allScores[modeKey] = {};
+
+    categories.forEach(category => {
+      const storageKey = SK.scores(`${modeKey}_${category.key}`);
+      const raw = localStorage.getItem(storageKey);
+      allScores[modeKey][category.key] = raw !== null ? parseFloat(raw) : 5;
+    });
+  });
+
+  const payload = {
+    mode: currentMode,
+    palette: currentPalette,
+    customLine,
+    customFill,
+    theme: localStorage.getItem(SK.theme) || 'dark',
+    sidebarExpanded: localStorage.getItem(SK.sbExpanded) || '0',
+    customCategories: MODES.custom.categories,
+    scores: allScores,
+    updatedAt: Date.now(),
+  };
+
+  localStorage.setItem(SK.backup, JSON.stringify(payload));
+}
+
+function restoreBackupState() {
+  try {
+    const raw = localStorage.getItem(SK.backup);
+    if (!raw) return;
+
+    const backup = JSON.parse(raw);
+    if (!backup || typeof backup !== 'object') return;
+
+    if (backup.mode && !localStorage.getItem(SK.mode)) {
+      localStorage.setItem(SK.mode, backup.mode);
+    }
+    if (backup.palette && !localStorage.getItem(SK.palette)) {
+      localStorage.setItem(SK.palette, backup.palette);
+    }
+    if (backup.customLine && !localStorage.getItem(SK.customLine)) {
+      localStorage.setItem(SK.customLine, backup.customLine);
+    }
+    if (backup.customFill && !localStorage.getItem(SK.customFill)) {
+      localStorage.setItem(SK.customFill, backup.customFill);
+    }
+    if (backup.theme && !localStorage.getItem(SK.theme)) {
+      localStorage.setItem(SK.theme, backup.theme);
+    }
+    if (backup.sidebarExpanded && !localStorage.getItem(SK.sbExpanded)) {
+      localStorage.setItem(SK.sbExpanded, backup.sidebarExpanded);
+    }
+    if (Array.isArray(backup.customCategories) && !localStorage.getItem(SK.customCats)) {
+      localStorage.setItem(SK.customCats, JSON.stringify(backup.customCategories));
+    }
+    if (backup.scores && typeof backup.scores === 'object') {
+      Object.entries(backup.scores).forEach(([modeKey, modeScores]) => {
+        if (!modeScores || typeof modeScores !== 'object') return;
+
+        Object.entries(modeScores).forEach(([categoryKey, value]) => {
+          const storageKey = SK.scores(`${modeKey}_${categoryKey}`);
+          if (localStorage.getItem(storageKey) === null) {
+            localStorage.setItem(storageKey, String(value));
+          }
+        });
+      });
+    }
+  } catch (_) {}
+}
 
 /* ══ DATE ═══════════════════════════════════════════════════ */
 function setDate() {
@@ -113,6 +211,7 @@ function initTheme() {
       const v = btn.dataset.themeVal;
       applyTheme(v);
       localStorage.setItem(SK.theme, v);
+      persistAppBackup();
     });
   });
 
@@ -152,6 +251,7 @@ function initSidebar() {
     const isExp = sidebar.classList.contains('expanded');
     expand(!isExp);
     localStorage.setItem(SK.sbExpanded, !isExp ? '1' : '0');
+    persistAppBackup();
   });
 
   // Rail buttons
@@ -163,9 +263,11 @@ function initSidebar() {
       if (!sidebar.classList.contains('expanded')) {
         expand(true);
         localStorage.setItem(SK.sbExpanded, '1');
+        persistAppBackup();
       } else if (alreadyActive) {
         expand(false);
         localStorage.setItem(SK.sbExpanded, '0');
+        persistAppBackup();
       }
     });
   });
@@ -270,6 +372,7 @@ function wireDrawerPanel(clone, panelId) {
         const v = btn.dataset.themeVal;
         applyTheme(v);
         localStorage.setItem(SK.theme, v);
+        persistAppBackup();
         closeMobileDrawer();
       });
     });
@@ -299,6 +402,7 @@ function switchMode(mode) {
 
   const editor = document.getElementById('custom-editor');
   if (editor) editor.classList.toggle('hidden', mode !== 'custom');
+  persistAppBackup();
   showToast(`Modo: ${MODES[mode]?.label || mode}`);
 }
 
@@ -337,6 +441,7 @@ function loadCustomCategories() {
 
 function saveCustomCategories() {
   localStorage.setItem(SK.customCats, JSON.stringify(MODES.custom.categories));
+  persistAppBackup();
 }
 
 function renderCustomTags(container) {
@@ -396,6 +501,7 @@ function loadScores() {
 
 function saveScore(key, val) {
   localStorage.setItem(SK.scores(currentMode + '_' + key), val);
+  persistAppBackup();
 }
 
 function resetScores() {
@@ -498,6 +604,7 @@ function selectPalette(id) {
   currentPalette = id;
   localStorage.setItem(SK.palette, id);
   applyPalette();
+  persistAppBackup();
 }
 
 function applyPalette() {
@@ -534,8 +641,8 @@ function updatePaletteUI() {
 function initCustomColor() {
   const lineEl = document.getElementById('cp-line');
   const fillEl = document.getElementById('cp-fill');
-  if (lineEl) { lineEl.value = customLine; lineEl.addEventListener('input', e => { customLine = e.target.value; localStorage.setItem(SK.customLine, customLine); applyCustomColor(); }); }
-  if (fillEl) { fillEl.value = customFill; fillEl.addEventListener('input', e => { customFill = e.target.value; localStorage.setItem(SK.customFill, customFill); applyCustomColor(); }); }
+  if (lineEl) { lineEl.value = customLine; lineEl.addEventListener('input', e => { customLine = e.target.value; localStorage.setItem(SK.customLine, customLine); applyCustomColor(); persistAppBackup(); }); }
+  if (fillEl) { fillEl.value = customFill; fillEl.addEventListener('input', e => { customFill = e.target.value; localStorage.setItem(SK.customFill, customFill); applyCustomColor(); persistAppBackup(); }); }
 }
 
 function applyCustomColor() {
@@ -543,6 +650,7 @@ function applyCustomColor() {
   localStorage.setItem(SK.palette, 'custom');
   applyPalette();
   updatePaletteUI();
+  persistAppBackup();
 }
 
 /* ══ CHART ══════════════════════════════════════════════════ */
