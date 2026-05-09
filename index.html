@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Studio</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sb-logo">
+      <span class="sb-logo-mark">◈</span>
+      <span class="sb-logo-text">My Studio</span>
+    </div>
+
+    <!-- Icon rail -->
+    <nav class="sb-rail">
+      <button class="sb-rail-btn active" data-panel="modes" title="Modos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span>Modos</span>
+      </button>
+      <button class="sb-rail-btn" data-panel="colors" title="Cores">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10"/><path d="M12 2v10l4.243 4.243"/><circle cx="18" cy="18" r="4"/></svg>
+        <span>Cores</span>
+      </button>
+      <button class="sb-rail-btn" data-panel="theme" title="Tema">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <span>Tema</span>
+      </button>
+    </nav>
+
+    <!-- Expanding panel area -->
+    <div class="sb-panels">
+
+      <!-- Modos -->
+      <div class="sb-panel active" id="panel-modes">
+        <p class="sb-panel-title">Painel</p>
+
+        <button class="mode-card active" data-mode="enem">
+          <span class="mode-icon">📚</span>
+          <div class="mode-text">
+            <span class="mode-name">ENEM</span>
+            <span class="mode-desc">Matemática, Redação…</span>
+          </div>
+          <span class="mode-check">✓</span>
+        </button>
+
+        <button class="mode-card" data-mode="academia">
+          <span class="mode-icon">🏋️</span>
+          <div class="mode-text">
+            <span class="mode-name">Academia</span>
+            <span class="mode-desc">Desempenho físico</span>
+          </div>
+          <span class="mode-check">✓</span>
+        </button>
+
+        <button class="mode-card" data-mode="custom">
+          <span class="mode-icon">✦</span>
+          <div class="mode-text">
+            <span class="mode-name">Custom</span>
+            <span class="mode-desc">Suas categorias</span>
+          </div>
+          <span class="mode-check">✓</span>
+        </button>
+
+        <button class="mode-card" data-mode="vida">
+          <span class="mode-icon">🌱</span>
+          <div class="mode-text">
+            <span class="mode-name">Vida</span>
+            <span class="mode-desc">Mente, Corpo, Social…</span>
+          </div>
+          <span class="mode-check">✓</span>
+        </button>
+
+        <!-- Custom editor -->
+        <div class="custom-editor hidden" id="custom-editor">
+          <p class="sb-section-label">Categorias (máx. 8)</p>
+          <div id="custom-tags"></div>
+          <div class="custom-add">
+            <input type="text" id="custom-input" placeholder="Nova categoria…" maxlength="20" />
+            <button id="custom-add-btn">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cores -->
+      <div class="sb-panel hidden" id="panel-colors">
+        <p class="sb-panel-title">Cor do Radar</p>
+        <p class="sb-section-label">Paletas prontas</p>
+        <div class="palette-grid" id="palette-grid"></div>
+        <p class="sb-section-label" style="margin-top:18px">Personalizada</p>
+        <div class="custom-color-row">
+          <div class="cp-field">
+            <label class="cp-label">Linha</label>
+            <input type="color" id="cp-line" value="#ffffff" />
+          </div>
+          <div class="cp-field">
+            <label class="cp-label">Preench.</label>
+            <input type="color" id="cp-fill" value="#4444ff" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Tema -->
+      <div class="sb-panel hidden" id="panel-theme">
+        <p class="sb-panel-title">Aparência</p>
+        <button class="theme-row" data-theme-val="dark">
+          <span class="theme-swatch dark-sw"></span>
+          <span class="theme-row-name">Escuro</span>
+          <span class="theme-row-check" id="tc-dark"></span>
+        </button>
+        <button class="theme-row" data-theme-val="light">
+          <span class="theme-swatch light-sw"></span>
+          <span class="theme-row-name">Claro</span>
+          <span class="theme-row-check" id="tc-light"></span>
+        </button>
+        <button class="theme-row" data-theme-val="auto">
+          <span class="theme-swatch auto-sw"></span>
+          <span class="theme-row-name">Automático</span>
+          <span class="theme-row-check" id="tc-auto"></span>
+        </button>
+      </div>
+
+    </div><!-- /sb-panels -->
+
+    <!-- Collapse toggle (desktop) -->
+    <button class="sb-collapse-btn" id="sb-collapse-btn" title="Recolher painel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+
+  </aside><!-- /sidebar -->
+
+  <!-- ══ APP BODY ══════════════════════════════════════════════ -->
+  <div class="app-body" id="app-body">
+
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" id="mobile-menu-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="topbar-logo">◈ My Studio</span>
+        <span class="topbar-sep">·</span>
+        <span class="topbar-mode-label" id="topbar-mode">ENEM</span>
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-date" id="topbar-date"></span>
+      </div>
+    </header>
+
+    <main class="main">
+
+      <section class="stats-bar">
+        <div class="stat-card">
+          <span class="stat-label">Média Geral</span>
+          <span class="stat-value" id="avg-value">—</span>
+        </div>
+        <div class="stat-card accent-green">
+          <span class="stat-label">Mais Forte</span>
+          <span class="stat-value" id="strongest">—</span>
+        </div>
+        <div class="stat-card accent-red">
+          <span class="stat-label">Mais Fraca</span>
+          <span class="stat-value" id="weakest">—</span>
+        </div>
+      </section>
+
+      <div class="content-grid">
+
+        <section class="panel chart-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Radar de Desempenho</h2>
+            <span class="panel-badge" id="mode-badge">ENEM 2025</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="radarChart"></canvas>
+          </div>
+        </section>
+
+        <section class="panel controls-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Ajustar Notas</h2>
+            <span class="panel-badge">0 – 10</span>
+          </div>
+          <div class="sliders" id="sliders-container"></div>
+          <div class="panel-actions">
+            <button class="btn-reset" id="btn-reset">↺ Resetar progresso</button>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div><!-- /app-body -->
+
+  <!-- ══ MOBILE BOTTOM NAV ══════════════════════════════════════ -->
+  <nav class="mobile-nav" id="mobile-nav">
+    <button class="mob-btn active" data-mob-panel="modes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span>Modos</span>
+    </button>
+    <button class="mob-btn" data-mob-panel="colors">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20M2 12h20"/></svg>
+      <span>Cores</span>
+    </button>
+    <button class="mob-btn" data-mob-panel="theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <span>Tema</span>
+    </button>
+  </nav>
+
+  <!-- Mobile drawer (bottom sheet) -->
+  <div class="mob-overlay hidden" id="mob-overlay"></div>
+  <div class="mob-drawer hidden" id="mob-drawer">
+    <div class="mob-drawer-handle"></div>
+    <div class="mob-drawer-body" id="mob-drawer-body"></div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
