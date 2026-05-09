@@ -14,9 +14,7 @@ const MODES = {
       { key:'humanas',    label:'C. Humanas' },
       { key:'natureza',   label:'C. Natureza' },
       { key:'redacao',    label:'Redação' },
-      { key:'disciplina', label:'Disciplina' },
       { key:'revisao',    label:'Revisão' },
-      { key:'foco',       label:'Foco' },
     ],
   },
   academia: {
@@ -67,6 +65,47 @@ const MODES = {
       { key:'relacionamentos', label:'Relacionamentos' },
     ],
   },
+};
+
+MODES.enem.label = 'ENEM 2025';
+MODES.enem.categories = [
+  { key:'matematica', label:'Matemática' },
+  { key:'linguagens', label:'Linguagens' },
+  { key:'humanas',    label:'C. Humanas' },
+  { key:'natureza',   label:'C. Natureza' },
+  { key:'redacao',    label:'Redação' },
+  { key:'revisao',    label:'Revisão' },
+];
+
+MODES.academia.label = 'Físico';
+MODES.academia.categories = [
+  { key:'forca',        label:'Força' },
+  { key:'resistencia',  label:'Resistência' },
+  { key:'velocidade',   label:'Velocidade' },
+  { key:'flexibilidade',label:'Flexibilidade' },
+  { key:'equilibrio',   label:'Equilíbrio' },
+  { key:'cardio',       label:'Cardio' },
+];
+
+MODES.vida.label = 'Vida';
+MODES.vida.categories = [
+  { key:'mente',      label:'🧠 Mente' },
+  { key:'corpo',      label:'💪 Corpo' },
+  { key:'social',     label:'🗣️ Social' },
+  { key:'disciplina', label:'🎯 Disciplina' },
+  { key:'financas',   label:'💰 Finanças' },
+];
+
+MODES.social = {
+  label: 'Social',
+  categories: [
+    { key:'comunicacao',     label:'Comunicação' },
+    { key:'conexoes',        label:'Conexões' },
+    { key:'confianca',       label:'Confiança' },
+    { key:'colaboracao',     label:'Colaboração' },
+    { key:'empatia',         label:'Empatia' },
+    { key:'relacionamentos', label:'Relacionamentos' },
+  ],
 };
 
 /* ══ PALETTES ═══════════════════════════════════════════════ */
