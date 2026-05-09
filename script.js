@@ -646,26 +646,43 @@ function selectPalette(id) {
   persistAppBackup();
 }
 
-function applyPalette() {
-  let line, fill;
-  if (currentPalette === 'custom') {
-    line = customLine; fill = customFill;
-  } else {
-    const p = PALETTES.find(x => x.id === currentPalette) || PALETTES[0];
-    line = p.line; fill = p.fill;
+function hexToRgba(hex, alpha) {
+  let normalized = hex.replace('#', '');
+  if (normalized.length === 3) {
+    normalized = normalized.split('').map(char => char + char).join('');
   }
+
+  const r = parseInt(normalized.slice(0, 2), 16);
+  const g = parseInt(normalized.slice(2, 4), 16);
+  const b = parseInt(normalized.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function getResolvedPaletteColors() {
+  const resolvedTheme = resolveTheme(localStorage.getItem(SK.theme) || 'dark');
+
+  if (currentPalette === 'custom') {
+    return { line: customLine, fill: customFill };
+  }
+
+  if (currentPalette === 'mono') {
+    return resolvedTheme === 'dark'
+      ? { line: '#ffffff', fill: '#ffffff' }
+      : { line: '#000000', fill: '#000000' };
+  }
+
+  const palette = PALETTES.find(item => item.id === currentPalette) || PALETTES[0];
+  return { line: palette.line, fill: palette.fill };
+}
+
+function applyPalette() {
+  const { line, fill } = getResolvedPaletteColors();
   document.documentElement.style.setProperty('--radar-line', line);
   if (chart) {
-    const hex2rgba = (hex, a) => {
-      const r = parseInt(hex.slice(1,3),16);
-      const g = parseInt(hex.slice(3,5),16);
-      const b = parseInt(hex.slice(5,7),16);
-      return `rgba(${r},${g},${b},${a})`;
-    };
     chart.data.datasets[0].borderColor          = line;
     chart.data.datasets[0].pointBackgroundColor  = line;
     chart.data.datasets[0].pointBorderColor      = line;
-    chart.data.datasets[0].backgroundColor       = hex2rgba(fill, FILL_ALPHA);
+    chart.data.datasets[0].backgroundColor       = hexToRgba(fill, FILL_ALPHA);
     chart.update('none');
   }
 }
@@ -694,28 +711,17 @@ function applyCustomColor() {
 
 /* ══ CHART ══════════════════════════════════════════════════ */
 function getRadarColors() {
-  let line, fill;
-  if (currentPalette === 'custom') {
-    line = customLine; fill = customFill;
-  } else {
-    const p = PALETTES.find(x => x.id === currentPalette) || PALETTES[0];
-    line = p.line; fill = p.fill;
-  }
-  const hex2rgba = (hex, a) => {
-    hex = hex.replace('#','');
-    if (hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
-    const r = parseInt(hex.slice(0,2),16);
-    const g = parseInt(hex.slice(2,4),16);
-    const b = parseInt(hex.slice(4,6),16);
-    return `rgba(${r},${g},${b},${a})`;
-  };
+  const { line, fill } = getResolvedPaletteColors();
   const resolved = resolveTheme(localStorage.getItem(SK.theme)||'dark');
   const isDark = resolved === 'dark';
   return {
-    line, fill: hex2rgba(fill, FILL_ALPHA),
+    line,
+    fill: hexToRgba(fill, FILL_ALPHA),
     grid: isDark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.07)',
     tick: isDark ? 'rgba(255,255,255,.3)'  : 'rgba(0,0,0,.3)',
-    labels: isDark ? 'rgba(255,255,255,.75)' : 'rgba(0,0,0,.75)',
+    labels: currentPalette === 'mono'
+      ? (isDark ? 'rgba(255,255,255,.75)' : 'rgba(0,0,0,.75)')
+      : hexToRgba(line, isDark ? 0.9 : 0.8),
   };
 }
 
