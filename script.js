@@ -133,7 +133,7 @@ const SK = {
 };
 
 /* ══ STATE ══════════════════════════════════════════════════ */
-let currentMode    = localStorage.getItem(SK.mode)    || 'enem';
+let currentMode    = localStorage.getItem(SK.mode)    || 'vida';
 let currentPalette = localStorage.getItem(SK.palette) || 'mono';
 let customLine     = localStorage.getItem(SK.customLine) || '#00ffcc';
 let customFill     = localStorage.getItem(SK.customFill) || '#00ffcc';
@@ -149,12 +149,14 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initSidebar();
   initModes();
+  initHub();
   initPalettes();
   initCustomColor();
   buildSliders();
   buildChart();
   updateStats();
   updateTopbar();
+  updateHubVisibility();
   setDate();
   persistAppBackup();
 });
@@ -429,6 +431,22 @@ function initModes() {
   wireCustomEditor(document);
 }
 
+function initHub() {
+  document.querySelectorAll('.hub-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const target = card.dataset.hubTarget;
+      if (!target) return;
+      switchMode(target);
+    });
+  });
+}
+
+function updateHubVisibility() {
+  const hubPanel = document.getElementById('hub-panel');
+  if (!hubPanel) return;
+  hubPanel.classList.toggle('hidden', currentMode !== 'vida');
+}
+
 function switchMode(mode) {
   currentMode = mode;
   localStorage.setItem(SK.mode, mode);
@@ -438,6 +456,7 @@ function switchMode(mode) {
   rebuildChart();
   updateStats();
   updateTopbar();
+  updateHubVisibility();
 
   const editor = document.getElementById('custom-editor');
   if (editor) editor.classList.toggle('hidden', mode !== 'custom');

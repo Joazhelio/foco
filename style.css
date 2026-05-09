@@ -305,6 +305,85 @@ body.sb-expanded .app-body{ margin-left:var(--sb-full); }
   flex-shrink:0;
 }
 
+.hub-panel{
+  margin-bottom:24px;
+  padding:18px;
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+}
+
+.hub-panel.hidden{
+  display:none;
+}
+
+.hub-panel-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.hub-panel-title{
+  font-size:1rem;
+  font-weight:700;
+  letter-spacing:.02em;
+}
+
+.hub-panel-subtitle{
+  font-family:var(--font-mono);
+  font-size:.62rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+}
+
+.hub-grid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:12px;
+}
+
+.hub-card{
+  padding:18px 16px;
+  border-radius:var(--r-lg);
+  border:1px solid var(--border);
+  background:linear-gradient(180deg,var(--bg-card),transparent);
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:10px;
+  color:var(--text);
+  text-align:left;
+  transition:transform var(--t-fast),border-color var(--t-fast),background var(--t-fast);
+}
+
+.hub-card:hover{
+  transform:translateY(-2px);
+  border-color:var(--border-h);
+  background:var(--bg-hover);
+}
+
+.hub-card-icon{
+  font-size:1.3rem;
+  line-height:1;
+}
+
+.hub-card-name{
+  font-size:.95rem;
+  font-weight:700;
+  letter-spacing:.02em;
+}
+
+.hub-card-desc{
+  font-family:var(--font-mono);
+  font-size:.62rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+}
+
 /* ── Stats ──────────────────────────────────────────────────── */
 .stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
 .stat-card{
@@ -513,6 +592,8 @@ body.sb-expanded .app-body{ margin-left:var(--sb-full); }
   .topbar-logo{display:none}
   .topbar-sep{display:none}
   .main{padding:16px 14px calc(var(--mob-nav-h) + 20px)}
+  .hub-panel{padding:16px}
+  .hub-grid{grid-template-columns:1fr;gap:10px}
   .stats-bar{grid-template-columns:1fr;gap:8px}
   .stat-card{flex-direction:row;align-items:center;justify-content:space-between;padding:14px 18px}
   .toast{bottom:calc(var(--mob-nav-h) + 12px)}
@@ -527,6 +608,7 @@ body.sb-expanded .app-body{ margin-left:var(--sb-full); }
   .panel-header{padding:18px 18px 0}
   .sliders{padding:12px 14px}
   .chart-wrapper{min-height:280px;padding:14px}
+  .hub-panel-header{align-items:flex-start;flex-direction:column}
 }
 
 /* Scrollbar */
